@@ -16,8 +16,9 @@ sync with git history.
       sun/glare/moon card (adsb.lol rejected: no CORS headers)
 - [x] **Phase 7 — milestones/polish**: state crossings, distance milestones,
       trip records, toasts, settings persistence
-- [ ] **Phase 8 — deploy**: GitHub repo, Pages enabled, verified on iPhone
-      (needs `gh auth login` with user present)
+- [x] **Phase 8 — deploy**: GitHub repo (public — required for free-plan
+      Pages), Pages enabled at https://swpricepersonal.github.io/road-trip-dashboard/
+      — still needs on-iPhone verification (add to home screen, GPS permission)
 
 ## Deploy routine (after any change)
 
