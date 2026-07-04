@@ -103,7 +103,11 @@ async function refreshRadar() {
     const latest = frames[frames.length - 1];
     const url = `${j.host}${latest.path}/256/{z}/{x}/{y}/2/1_1.png`;
 
-    const fresh = L.tileLayer(url, { opacity: 0.65, maxZoom: 19 });
+    // RainViewer's radar mosaic has no real detail past zoom 7 (confirmed:
+    // deeper zoom just crops/upscales the same z7 image). maxNativeZoom
+    // stops network fetches there and lets Leaflet scale the cached tile
+    // client-side for closer zooms, instead of re-downloading duplicates.
+    const fresh = L.tileLayer(url, { opacity: 0.65, maxZoom: 19, maxNativeZoom: 7 });
     fresh.addTo(map);
     if (radarLayer) map.removeLayer(radarLayer);
     radarLayer = fresh;
