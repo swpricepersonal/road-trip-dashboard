@@ -1,7 +1,7 @@
 /* Service worker: cache the app shell so the dashboard opens instantly
    (and works with no signal) — live API calls always go to the network. */
 
-const CACHE = 'rtd-v1';
+const CACHE = 'rtd-v2';
 
 const SHELL = [
   './',
@@ -50,10 +50,13 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
   // Same-origin shell files: network-first so a deploy is picked up on next
-  // load, falling back to cache when offline.
+  // load, falling back to cache when offline. `cache: 'no-cache'` forces
+  // revalidation with the server (GitHub Pages sends max-age=600, which
+  // would otherwise let the browser serve a stale deploy for up to 10 min
+  // even though we're asking the network first).
   if (url.origin === location.origin) {
     e.respondWith(
-      fetch(e.request)
+      fetch(e.request, { cache: 'no-cache' })
         .then((resp) => {
           const copy = resp.clone();
           caches.open(CACHE).then((c) => c.put(e.request, copy));

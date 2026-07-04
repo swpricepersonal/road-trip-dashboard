@@ -45,13 +45,19 @@ fullscreen like an app.
 | Open-Meteo | weather.js | current conditions + precip outlook | 10 min or 15 km |
 | RainViewer | map.js | radar tile overlay | 5 min while radar on |
 
-Radar zoom note: RainViewer's radar mosaic has no real detail past zoom 7
-(confirmed by direct testing — deeper zoom just crops/upscales the same z7
-tile, byte-identical regardless of z). `maxNativeZoom: 7` on the radar layer
-stops the app from re-fetching that duplicate data over cellular as you zoom
-in tighter; Leaflet scales the cached tile client-side instead. The map
-itself still zooms freely — this only affects how tight the *radar* gets
-before it's just a bigger blur of the same data.
+Radar zoom note: RainViewer's radar mosaic has no real detail past zoom 7 —
+past that they literally serve a "Zoom Level Not Supported" placeholder PNG
+(confirmed by downloading and viewing tiles at z=8/10/12). `maxNativeZoom: 7`
+on the radar layer stops the app from requesting that placeholder as you
+zoom in tighter; Leaflet scales the real z7 tile client-side instead. The
+map itself still zooms freely — this only affects how tight the *radar*
+gets before it's just a bigger blur of the same data.
+
+Deploy caching gotcha: GitHub Pages serves JS/CSS with `Cache-Control:
+max-age=600`. sw.js's "network-first" fetch didn't override this, so the
+browser could silently serve a stale deploy for up to 10 min even though the
+SW asked the network first. Fixed by adding `{ cache: 'no-cache' }` to the
+SW's fetch call, forcing revalidation every load.
 | BigDataCloud reverse-geocode-client | milestones.js | state/city for crossing detection | 90 s + 2.5 km |
 
 ADS-B source history (2026-07): OpenSky (user has an API key, see

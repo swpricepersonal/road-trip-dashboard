@@ -18,7 +18,7 @@ import './planes.js';
 import './sun.js';
 import './milestones.js';
 
-export const APP_VERSION = '0.1.0';
+export const APP_VERSION = '0.1.1';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
