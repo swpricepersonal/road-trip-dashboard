@@ -9,6 +9,11 @@
    localStorage (the state list never changes, so there's no reason to
    re-query Wikipedia every time the tab opens); failed lookups are retried
    next session rather than cached as permanent misses.
+
+   A handful of states (DIRECT_IMAGE below) have an empty infobox |image=
+   in their Wikipedia article, so the search API never finds a page image
+   even though the article has plenty of individual plate photos — those
+   are hand-picked direct Commons URLs instead of a live search.
 */
 
 import { on } from './bus.js';
@@ -36,6 +41,27 @@ export const STATES = [
 const SEARCH_OVERRIDE = {
   GA: 'Vehicle registration plates of Georgia (U.S. state)',
   WA: 'Vehicle registration plates of Washington (state)',
+};
+
+// These states' "Vehicle registration plates of X" article has an empty
+// infobox |image= param, so Wikipedia's pageimages API returns nothing even
+// though the article has plenty of individual plate photos further down —
+// hand-picked directly from each article's image list (checked 2026-07).
+const DIRECT_IMAGE = {
+  AL: 'https://upload.wikimedia.org/wikipedia/commons/2/26/1996_Alabama_license_plate_11X9_130.jpg',
+  AZ: 'https://upload.wikimedia.org/wikipedia/commons/0/0a/2005_Arizona_License_Plate.png',
+  AR: 'https://upload.wikimedia.org/wikipedia/commons/f/fb/Arkansas_2011_license_plate.jpg',
+  ID: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Idaho_license_plate%2C_1987%E2%80%931991_series_with_March_1990_sticker.png',
+  IL: 'https://upload.wikimedia.org/wikipedia/commons/b/b4/2017_Illinois_License_Plate.png',
+  IN: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Indiana_1991_license_plate.jpg',
+  KS: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Kansas_License_Plate_Standard_Flat_September_2019.jpg',
+  KY: 'https://upload.wikimedia.org/wikipedia/commons/0/03/Kentucky_License_Plate_1998.jpg',
+  NE: 'https://upload.wikimedia.org/wikipedia/commons/b/bf/Nebraska_1953_License_Plate.jpg',
+  NM: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/2019_New_Mexico_License_Plate.jpg',
+  NY: 'https://upload.wikimedia.org/wikipedia/commons/c/c0/New_York_plate_4-2010.jpg',
+  PA: 'https://upload.wikimedia.org/wikipedia/commons/0/07/2017_Pennsylvanian_license_plate.png',
+  SC: 'https://upload.wikimedia.org/wikipedia/commons/d/d6/2023_South_Carolina_mail-out_series_passenger_car_rear_license_plate.png',
+  WY: 'https://upload.wikimedia.org/wikipedia/commons/4/47/1983-1987_Wyoming_License_Plate.jpg',
 };
 
 const PLATE_PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
@@ -103,8 +129,15 @@ async function fetchPlateImage(code, name) {
 
 function ensureImagesLoading() {
   const todo = STATES.filter(([code]) => !imgCache.has(code) && !imgPending.has(code));
-  todo.forEach(([code, name], i) => {
+  let searchCount = 0;
+  todo.forEach(([code, name]) => {
+    if (DIRECT_IMAGE[code]) {
+      imgCache.set(code, DIRECT_IMAGE[code]);
+      saveImgCache();
+      return;
+    }
     imgPending.add(code);
+    const i = searchCount++;
     setTimeout(() => fetchPlateImage(code, name), i * FETCH_STAGGER_MS);
   });
 }
@@ -172,7 +205,7 @@ document.getElementById('plateViewMap')?.addEventListener('click', () => setView
 on('screen', ({ name }) => {
   if (name !== 'plates') return;
   updateCount();
+  ensureImagesLoading(); // populates direct-image overrides synchronously before render
   renderGrid();
-  ensureImagesLoading();
   if (view === 'map') loadMap();
 });

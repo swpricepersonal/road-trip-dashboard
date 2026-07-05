@@ -21,7 +21,7 @@ import './achievements.js';
 import './iss.js';
 import './plates.js';
 
-export const APP_VERSION = '0.1.4';
+export const APP_VERSION = '0.1.5';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
