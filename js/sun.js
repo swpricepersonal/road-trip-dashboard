@@ -61,5 +61,24 @@ function render(fix) {
 
   const illum = SunCalc.getMoonIllumination(now);
   const name = MOON_NAMES[Math.round(illum.phase * 8) % 8];
-  moonEl.textContent = `${name} · ${Math.round(illum.fraction * 100)}% lit`;
+  moonEl.textContent = `${name} · ${Math.round(illum.fraction * 100)}% lit · ${moonTimesText(now, fix.lat, fix.lon)}`;
+}
+
+// SunCalc.getMoonTimes only covers the given calendar day (local time) and
+// omits rise or set entirely on days the moon doesn't cross the horizon
+// (alwaysUp/alwaysDown), so fall back to tomorrow's times in that case.
+function moonTimesText(now, lat, lon) {
+  let t = SunCalc.getMoonTimes(now, lat, lon);
+  if (t.alwaysUp) return 'moon up all day';
+  if (t.alwaysDown) return 'moon down all day';
+  if (!t.rise || !t.set) {
+    const tomorrow = new Date(now.getTime() + 86400000);
+    const t2 = SunCalc.getMoonTimes(tomorrow, lat, lon);
+    if (!t.rise && t2.rise) t.rise = t2.rise;
+    if (!t.set && t2.set) t.set = t2.set;
+  }
+  const parts = [];
+  if (t.rise) parts.push(`moonrise ${fmtClock(t.rise)}`);
+  if (t.set) parts.push(`moonset ${fmtClock(t.set)}`);
+  return parts.join(' · ') || 'moon times n/a';
 }

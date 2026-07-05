@@ -25,6 +25,19 @@ let lastFix = null;
 let timer = null;
 let lastError = null;
 
+// Aircraft photo lookup via Wikipedia's search API (keyless, CORS-open via
+// origin=*). planespotters.net's per-tail photo API was the obvious choice
+// but rejects any real browser User-Agent, and browsers won't let JS override
+// it — no static-site workaround. Wikipedia gives a representative photo of
+// the aircraft *model* instead of the exact tail, which is good enough here
+// and is cached per type so repeat sightings cost nothing.
+const IMG_CACHE = new Map(); // desc/type string -> photo URL or null (looked up, none found)
+const IMG_PENDING = new Set();
+const PLANE_PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#4a5a6b">'
+  + '<path d="M22 16v-2l-8.5-5V3.5a1.5 1.5 0 0 0-3 0V9L2 14v2l8.5-2.5V19L8 20.5V22l4-1 4 1v-1.5L13.5 19v-5.5z"/></svg>',
+);
+
 on('screen', ({ name }) => {
   skyActive = name === 'sky';
   if (skyActive) { poll(); timer ??= setInterval(poll, POLL_MS); }
@@ -48,6 +61,42 @@ async function poll() {
     console.warn('[planes]', e.message);
     renderError();
   }
+}
+
+function planeImgKey(a) {
+  return (a.desc || a.t || '').trim();
+}
+
+function ensurePlaneImage(key) {
+  if (!key || IMG_CACHE.has(key) || IMG_PENDING.has(key)) return;
+  IMG_PENDING.add(key);
+  fetchPlaneImage(key);
+}
+
+async function fetchPlaneImage(key) {
+  try {
+    const q = encodeURIComponent(key);
+    const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${q}&gsrlimit=1&prop=pageimages&pithumbsize=200`;
+    const ctrl = new AbortController();
+    const timeout = setTimeout(() => ctrl.abort(), 8000);
+    const r = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(timeout);
+    const j = await r.json();
+    const page = Object.values(j?.query?.pages || {})[0];
+    IMG_CACHE.set(key, page?.thumbnail?.source || null);
+  } catch {
+    IMG_CACHE.set(key, null);
+  } finally {
+    IMG_PENDING.delete(key);
+    const src = IMG_CACHE.get(key);
+    if (src) patchPlaneImages(key, src);
+  }
+}
+
+function patchPlaneImages(key, src) {
+  document.querySelectorAll('.plane-img').forEach((img) => {
+    if (img.dataset.key === key) img.src = src;
+  });
 }
 
 function isMilitary(hex) {
@@ -89,6 +138,9 @@ function render(acList) {
     const mil = isMilitary(a.hex) ? ' 🪖' : '';
     const altFt = pAltM != null ? Math.round(pAltM * M2FT / 100) * 100 : null;
     const distMi = (gDistM * M2MI).toFixed(1);
+    const imgKey = planeImgKey(a);
+    const imgSrc = IMG_CACHE.get(imgKey) || PLANE_PLACEHOLDER;
+    ensurePlaneImage(imgKey);
 
     let look;
     if (heading != null) {
@@ -109,10 +161,13 @@ function render(acList) {
     const who = [a.ownOp, a.desc].filter(Boolean).join(' — ');
 
     return `<div class="plane-card">
-      <div class="plane-head"><span>${esc(name)}${mil}</span><span class="ptype">${esc(a.t || '')}</span></div>
-      ${who ? `<div class="plane-detail">${esc(who)}</div>` : ''}
-      <div class="plane-detail">${detail}</div>
-      <div class="plane-look">👀 ${look}</div>
+      <img class="plane-img" data-key="${esc(imgKey)}" src="${imgSrc}" alt="" loading="lazy">
+      <div class="plane-info">
+        <div class="plane-head"><span>${esc(name)}${mil}</span><span class="ptype">${esc(a.t || '')}</span></div>
+        ${who ? `<div class="plane-detail">${esc(who)}</div>` : ''}
+        <div class="plane-detail">${detail}</div>
+        <div class="plane-look">👀 ${look}</div>
+      </div>
     </div>`;
   }).join('');
 }

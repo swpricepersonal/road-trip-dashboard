@@ -133,7 +133,9 @@ main {
 #sunPos, #moonInfo { color: var(--muted); font-size: 13px; }
 #sunPos.glare { color: var(--warn); font-weight: 600; }
 #planeList { display: flex; flex-direction: column; gap: 8px; }
-.plane-card { background: var(--card); border-radius: 12px; padding: 10px 12px; }
+.plane-card { display: flex; gap: 10px; align-items: flex-start; background: var(--card); border-radius: 12px; padding: 10px 12px; }
+.plane-img { width: 56px; height: 56px; flex: 0 0 auto; object-fit: cover; border-radius: 8px; background: var(--bg2); }
+.plane-info { flex: 1; min-width: 0; }
 .plane-head { display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; }
 .plane-head .ptype { color: var(--accent2); font-weight: 600; }
 .plane-detail { color: var(--muted); font-size: 13px; margin-top: 2px; }
