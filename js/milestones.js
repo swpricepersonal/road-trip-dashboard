@@ -6,7 +6,7 @@
 */
 
 import { emit, on } from './bus.js';
-import { haversineM, fmtAlt, altUnit, fmtSpeed, speedUnit, imperial, M2MI } from './util.js';
+import { haversineM, fmtAlt, altUnit, fmtSpeed, speedUnit, imperial, M2MI, MPS2MPH } from './util.js';
 import { trip, addTripEvent } from './trip.js';
 
 const GEO_MIN_MS = 90000;
@@ -52,7 +52,7 @@ const ODOMETER_FACTS = [ // miles
   [2448, "the full length of Route 66"],
 ];
 
-const MPH_88_MPS = 39.34; // 88 mph, exactly — Back to the Future's DeLorean threshold
+const MPH_88_MPS = 88 / MPS2MPH; // Back to the Future's DeLorean threshold
 
 const STATE_FACTS = {
   Alabama: "home to the rocket engines tested for the Apollo missions, in Huntsville",
@@ -162,9 +162,14 @@ async function maybeGeocode(fix) {
     const county = (j.localityInfo?.administrative || [])
       .find((x) => /county|parish|borough/i.test(x.description || ''))?.name || null;
 
-    if (state && region.state && state !== region.state) {
-      const fact = STATE_FACTS[state];
-      announce(`Welcome to ${state}!` + (fact ? ` Fun fact: ${fact}.` : ''));
+    if (state && state !== region.state) {
+      // Announce only real crossings (previous state known), but emit
+      // region-change even for the first acquisition so listeners like the
+      // State Collector badge count the starting state too.
+      if (region.state) {
+        const fact = STATE_FACTS[state];
+        announce(`Welcome to ${state}!` + (fact ? ` Fun fact: ${fact}.` : ''));
+      }
       emit('region-change', { state });
     }
     region = { state, county, city };

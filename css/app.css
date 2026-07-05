@@ -175,8 +175,11 @@ main {
 .plate-count { font-size: 18px; font-weight: 700; }
 .plate-view-toggle { display: flex; gap: 6px; }
 .plate-view-toggle .chip { padding: 6px 12px; font-size: 13px; }
+.plate-progress { height: 4px; background: var(--bg2); border-radius: 2px; margin-bottom: 10px; overflow: hidden; }
+#plateProgressFill { height: 100%; width: 0; background: var(--accent); border-radius: 2px; transition: width .3s; }
 .plate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.plate-card { background: var(--card); border-radius: 10px; padding: 6px; text-align: center; }
+.plate-card { background: var(--card); border-radius: 10px; padding: 6px; text-align: center; transition: transform .1s; }
+.plate-card:active { transform: scale(0.95); }
 .plate-img {
   width: 100%; aspect-ratio: 2 / 1; object-fit: contain; background: var(--bg2);
   border-radius: 6px; filter: grayscale(1); opacity: 0.4; transition: filter .2s, opacity .2s;

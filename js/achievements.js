@@ -4,6 +4,7 @@
 import { emit, on } from './bus.js';
 import { addTripEvent } from './trip.js';
 import { getWeather } from './weather.js';
+import { getRegion } from './milestones.js';
 
 const KEY = 'rtd-badges';
 const MOVING_MPS = 1.3; // ~3 mph
@@ -40,7 +41,13 @@ function unlock(id) {
 }
 
 on('trip-life', ({ type }) => {
-  if (type === 'start' || type === 'resume') statesThisTrip = new Set();
+  if (type === 'start' || type === 'resume') {
+    // Seed with the state we're already in — "3+ states in one trip" should
+    // count the starting state, not just crossings after departure.
+    statesThisTrip = new Set();
+    const s = getRegion().state;
+    if (s) statesThisTrip.add(s);
+  }
 });
 
 on('region-change', ({ state }) => {

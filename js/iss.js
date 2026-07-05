@@ -8,7 +8,7 @@
    just an ambient distance/bearing readout. */
 
 import { on } from './bus.js';
-import { haversineM, bearingDeg, compass, M2MI } from './util.js';
+import { haversineM, bearingDeg, compass, M2MI, EARTH_R_M } from './util.js';
 
 const POLL_MS = 20000;
 const ISS_ID = 25544;
@@ -44,7 +44,13 @@ function render(iss) {
   const issAltM = iss.altitude * 1000;
   const groundDistM = haversineM(lat, lon, iss.latitude, iss.longitude);
   const brg = bearingDeg(lat, lon, iss.latitude, iss.longitude);
-  const elevDeg = (Math.atan2(issAltM - (altM ?? 0), groundDistM) * 180) / Math.PI;
+  // Elevation over a curved Earth. The naive atan2(height, distance) is only
+  // valid for nearby objects (fine for aircraft in planes.js) — at ISS ranges
+  // it claims "5° up" for a station 3,000 mi away that's actually far below
+  // the horizon. Standard satellite-elevation formula instead: with c the
+  // central angle to the subpoint, elev = atan2(cos c − R/(R+h), sin c).
+  const c = groundDistM / EARTH_R_M;
+  const elevDeg = (Math.atan2(Math.cos(c) - EARTH_R_M / (EARTH_R_M + issAltM), Math.sin(c)) * 180) / Math.PI;
   const distMi = Math.round(groundDistM * M2MI);
 
   let sunAltDeg = null;

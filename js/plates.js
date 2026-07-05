@@ -103,6 +103,8 @@ function toggleSeen(code) {
 function updateCount() {
   const el = document.getElementById('plateCount');
   if (el) el.textContent = `${seen.size} / ${STATES.length}`;
+  const fill = document.getElementById('plateProgressFill');
+  if (fill) fill.style.width = `${(seen.size / STATES.length) * 100}%`;
 }
 
 /* ── plate photo lookup ─────────────────────────────────── */
@@ -183,7 +185,8 @@ async function loadMap() {
       path.addEventListener('click', () => toggleSeen(code));
     });
   } catch (e) {
-    wrap.innerHTML = '<div class="muted">map unavailable</div>';
+    mapLoaded = false; // retry on next visit rather than failing forever
+    wrap.innerHTML = '<div class="muted">map unavailable — will retry</div>';
     console.warn('[plates] map load failed:', e.message);
   }
 }

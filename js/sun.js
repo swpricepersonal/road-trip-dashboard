@@ -85,10 +85,14 @@ function terminatorRace(fix, sunAzDeg, up) {
 
   const pct = Math.round((westMps / terminatorMps) * 100);
   if (pct < 2) return '';
+  // Driving west runs *with* the sun: it delays your local sunset (daytime)
+  // or holds off the sunrise sweeping toward you from the east (pre-dawn).
   const label = up ? 'sunset' : 'sunrise';
   return pct >= 100
-    ? `🌅 you're driving west faster than the terminator line — outrunning ${label} itself!`
-    : `chasing the ${label}: driving west fast enough to match ${pct}% of the terminator's sweep`;
+    ? `🌅 driving west faster than the terminator line — ${label} literally can't catch you!`
+    : up
+      ? `chasing the sunset: matching ${pct}% of the terminator's westward sweep`
+      : `holding off the sunrise: matching ${pct}% of the terminator's westward sweep`;
 }
 
 // SunCalc.getMoonTimes only covers the given calendar day (local time) and
