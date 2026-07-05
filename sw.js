@@ -1,7 +1,7 @@
 /* Service worker: cache the app shell so the dashboard opens instantly
    (and works with no signal) — live API calls always go to the network. */
 
-const CACHE = 'rtd-v8';
+const CACHE = 'rtd-v9';
 
 const SHELL = [
   './',
@@ -27,6 +27,7 @@ const SHELL = [
   './js/plates.js',
   './js/bingo.js',
   './js/lifetime.js',
+  './js/voice.js',
   './vendor/uplot/uPlot.iife.min.js',
   './vendor/uplot/uPlot.min.css',
   './vendor/leaflet/leaflet.js',

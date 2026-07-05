@@ -43,7 +43,10 @@ records get a real-world comparison ("farther than a marathon", "as high as the 
 "faster than a cheetah's top sprint"), state crossings get a one-line trivia fact, integer
 parallel crossings announce same-latitude world cities, and hitting exactly 88 mph fires a
 Back to the Future easter egg. sun.js also flags supermoons/micromoons and full-moon-rise-at-
-sunset spectacles using SunCalc's moon distance.
+sunset spectacles using SunCalc's moon distance. voice.js speaks every bus 'event' (all of the
+above) via the Web Speech API — on-device, offline, toggle in Settings; emoji are stripped and
+unit abbreviations expanded before speaking, and the engine is primed on first tap because iOS
+blocks programmatic speech until a user-gesture utterance has fired.
 
 ## External data (all free, keyless, CORS-open)
 

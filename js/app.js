@@ -21,8 +21,9 @@ import './achievements.js';
 import './iss.js';
 import './plates.js';
 import './lifetime.js';
+import './voice.js';
 
-export const APP_VERSION = '0.1.7';
+export const APP_VERSION = '0.1.8';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -220,6 +221,7 @@ $('settingsBtn').addEventListener('click', () => {
   $('setUnits').value = settings.units;
   $('setPlaneRadius').value = String(settings.planeRadiusNm);
   $('setWake').checked = settings.keepAwake;
+  $('setVoice').checked = settings.voice;
   $('verInfo').textContent = `v${APP_VERSION}${SIM ? ' · SIM' : ''}`;
   $('settings').showModal();
 });
@@ -229,6 +231,7 @@ $('settingsClose').addEventListener('click', () => {
     units: $('setUnits').value,
     planeRadiusNm: Number($('setPlaneRadius').value),
     keepAwake: $('setWake').checked,
+    voice: $('setVoice').checked,
   });
   $('settings').close();
   renderTripState();

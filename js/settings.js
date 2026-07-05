@@ -8,6 +8,7 @@ const defaults = {
   units: 'imperial',      // 'imperial' | 'metric'
   planeRadiusNm: 25,      // aircraft search radius
   keepAwake: true,        // screen wake lock
+  voice: true,            // spoken milestone/event announcements
 };
 
 export const settings = { ...defaults, ...load() };
