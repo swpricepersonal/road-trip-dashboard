@@ -108,6 +108,58 @@ const STATE_FACTS = {
   "District of Columbia": "not part of any state — its license plates protest 'taxation without representation'",
 };
 
+// Same-latitude company for each integer parallel in the driveable US range.
+const PARALLEL_FACTS = {
+  25: 'shared with Taipei and the heart of the Sahara',
+  26: 'Miami sits just below this line',
+  27: "Kathmandu's latitude, gateway to the Himalayas",
+  28: 'Cape Canaveral country — and the Canary Islands',
+  29: 'shared with Houston and the Nile Delta',
+  30: 'New Orleans, Cairo, and Houston all hug this line',
+  31: 'shared with Shanghai and Jerusalem',
+  32: 'shared with Savannah, San Diego, and Tel Aviv',
+  33: 'shared with Atlanta, Phoenix, and Casablanca',
+  34: 'shared with Los Angeles and Kabul',
+  35: 'shared with Albuquerque, Tokyo, and Tehran',
+  36: 'shared with Las Vegas, Nashville, and the Strait of Gibraltar',
+  37: 'shared with San Francisco, Seville, and Seoul',
+  38: 'the famous one — this parallel divided Korea',
+  39: 'shared with Kansas City and Beijing',
+  40: 'shared with Philadelphia, Madrid, and Ankara',
+  41: 'shared with Istanbul and (nearly) New York City',
+  42: 'shared with Boston and (almost) Rome',
+  43: 'shared with Milwaukee, Florence, and Sapporo',
+  44: 'shared with Halifax and Bordeaux wine country',
+  45: 'halfway between the equator and the North Pole!',
+  46: 'shared with Geneva, Switzerland',
+  47: 'shared with Seattle and Zurich',
+  48: 'shared with Paris and Vienna',
+  49: 'the US–Canada border runs along this line for 1,300 miles',
+};
+
+function ordinal(n) {
+  const rem = n % 10;
+  const suffix = n % 100 >= 11 && n % 100 <= 13 ? 'th'
+    : rem === 1 ? 'st' : rem === 2 ? 'nd' : rem === 3 ? 'rd' : 'th';
+  return `${n}${suffix}`;
+}
+
+let latBand = null;
+
+function checkParallel(fix) {
+  const band = Math.floor(fix.lat);
+  if (latBand === null) { latBand = band; return; }
+  if (band === latBand) return;
+  // The line crossed is the higher band edge (northbound crosses `band`,
+  // southbound crosses `latBand`). Hysteresis: wait until we're ~1 km past
+  // the line so GPS jitter straddling it can't re-fire the toast.
+  const line = Math.max(band, latBand);
+  if (Math.abs(fix.lat - line) < 0.01) return;
+  latBand = band;
+  const fact = PARALLEL_FACTS[line];
+  announce(`🌐 Crossed the ${ordinal(line)} parallel` + (fact ? ` — ${fact}` : '!'));
+}
+
 function pickFact(table, value) {
   let label = null;
   for (const [thresh, text] of table) {
@@ -133,6 +185,7 @@ on('trip-life', ({ type, trip: t }) => {
 
 on('fix', (fix) => {
   maybeGeocode(fix);
+  checkParallel(fix);
   if (trip) checkRecords(trip);
 });
 

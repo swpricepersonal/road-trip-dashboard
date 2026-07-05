@@ -18,6 +18,7 @@
 
 import { on } from './bus.js';
 import { esc } from './util.js';
+import { renderBingo } from './bingo.js';
 
 const SEEN_KEY = 'rtd-plates-seen';
 const IMG_CACHE_KEY = 'rtd-plates-img-cache';
@@ -197,13 +198,19 @@ function setView(next) {
   view = next;
   document.getElementById('plateGrid').classList.toggle('hidden', view !== 'grid');
   document.getElementById('plateMapWrap').classList.toggle('hidden', view !== 'map');
+  document.getElementById('bingoWrap').classList.toggle('hidden', view !== 'bingo');
+  // The progress bar tracks the plate collection — hide it during bingo.
+  document.getElementById('plateProgress').classList.toggle('hidden', view === 'bingo');
   document.getElementById('plateViewGrid').classList.toggle('chip-on', view === 'grid');
   document.getElementById('plateViewMap').classList.toggle('chip-on', view === 'map');
+  document.getElementById('plateViewBingo').classList.toggle('chip-on', view === 'bingo');
   if (view === 'map') loadMap();
+  if (view === 'bingo') renderBingo();
 }
 
 document.getElementById('plateViewGrid')?.addEventListener('click', () => setView('grid'));
 document.getElementById('plateViewMap')?.addEventListener('click', () => setView('map'));
+document.getElementById('plateViewBingo')?.addEventListener('click', () => setView('bingo'));
 
 on('screen', ({ name }) => {
   if (name !== 'plates') return;
@@ -211,4 +218,5 @@ on('screen', ({ name }) => {
   ensureImagesLoading(); // populates direct-image overrides synchronously before render
   renderGrid();
   if (view === 'map') loadMap();
+  if (view === 'bingo') renderBingo();
 });

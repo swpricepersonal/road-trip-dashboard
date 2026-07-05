@@ -20,8 +20,9 @@ import './milestones.js';
 import './achievements.js';
 import './iss.js';
 import './plates.js';
+import './lifetime.js';
 
-export const APP_VERSION = '0.1.6';
+export const APP_VERSION = '0.1.7';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);

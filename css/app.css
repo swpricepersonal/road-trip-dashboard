@@ -192,6 +192,26 @@ main {
 .plate-map path.seen { fill: var(--accent); }
 .plate-map circle { fill: var(--bg2); stroke: var(--bg); }
 
+.bingo-card { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.bingo-cell {
+  aspect-ratio: 1; background: var(--card); border-radius: 8px; padding: 3px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; font-size: 10px; color: var(--muted);
+  transition: transform .1s, background .15s;
+}
+.bingo-cell:active { transform: scale(0.93); }
+.bingo-cell .bi { font-size: 18px; }
+.bingo-cell.marked { background: var(--accent); color: #04140b; font-weight: 600; }
+.bingo-cell.free { box-shadow: 0 0 0 1px var(--accent2) inset; }
+.bingo-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+
+#lifetimeStats .plate-progress { margin: 8px 0 4px; }
+.lifetime-line { font-size: 14px; }
+.lifetime-line.climb { margin-top: 8px; }
+.lifetime-num { font-size: 18px; font-weight: 700; color: var(--accent); }
+.lifetime-fill { height: 100%; background: var(--accent2); border-radius: 2px; transition: width .3s; }
+.lifetime-next { color: var(--muted); font-size: 12px; }
+
 /* ── tab bar ─────────────────────────────────────────── */
 #tabbar {
   position: fixed; bottom: 0; left: 0; right: 0;

@@ -71,6 +71,36 @@ function render(fix) {
   const illum = SunCalc.getMoonIllumination(now);
   const name = MOON_NAMES[Math.round(illum.phase * 8) % 8];
   moonEl.textContent = `${name} · ${Math.round(illum.fraction * 100)}% lit · ${moonTimesText(now, fix.lat, fix.lon)}`;
+
+  const specialEl = document.getElementById('moonSpecial');
+  if (specialEl) specialEl.textContent = moonSpecial(now, fix.lat, fix.lon, illum, times);
+}
+
+// Supermoon/micromoon (SunCalc gives the moon's distance in km; mean is
+// ~384,400) and the "big orange moonrise" spectacle: a full-ish moon rising
+// near sunset looks huge and amber on the horizon — worth a heads-up.
+function moonSpecial(now, lat, lon, illum, times) {
+  const full = illum.fraction > 0.97;
+  const dist = SunCalc.getMoonPosition(now, lat, lon).distance;
+
+  // 367,600 km = Espenak's perigee-syzygy cutoff; verified against the
+  // Nov 2025 supermoon (SunCalc reports 364,131 km) and the Apr 2025
+  // micromoon (405,835 km).
+  if (full && dist < 367600) {
+    const pct = Math.round((1 - dist / 384400) * 100);
+    return `🌕 supermoon tonight — ${pct}% closer than average`;
+  }
+  if (full && dist > 405000) {
+    return '🌑 micromoon — the moon is near its farthest point from Earth';
+  }
+
+  if (illum.fraction > 0.95 && times.sunset) {
+    const mt = SunCalc.getMoonTimes(now, lat, lon);
+    if (mt.rise && Math.abs(mt.rise - times.sunset) < 40 * 60000 && now < mt.rise) {
+      return `🌕 watch east around ${fmtClock(mt.rise)} — big orange moonrise at sunset`;
+    }
+  }
+  return '';
 }
 
 // How much of the terminator's westward sweep your driving is matching.

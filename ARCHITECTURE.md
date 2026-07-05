@@ -35,13 +35,15 @@ fullscreen like an app.
 | Charts | charts.js | uPlot speed-vs-time + elevation-vs-time of active trip |
 | Map | map.js | Leaflet + OSM tiles, trip track polyline, follow toggle, RainViewer radar overlay, weather panel |
 | Sky | planes.js, sun.js, iss.js | nearby aircraft (callsign, type, alt, distance, "10 o'clock · left window · 25° up", Wikipedia photo of the aircraft model), sunrise/sunset/golden hour, glare warning, moon phase + rise/set, terminator-chasing fun line, ISS position + "look up" spotting callout |
-| Trips | app.js, store.js, achievements.js | live stats grid, GPX/CSV export, past-trip history with delete/export, achievement badge tray |
-| Plates | plates.js | license plate spotting game — grid of 50 states (greyed out until tapped seen, Wikipedia plate photo per state) and a US map view (vendored SVG, continental + AK/HI insets) that colors in seen states; seen-count and per-state state persist in localStorage, independent of any trip |
+| Trips | app.js, store.js, achievements.js, lifetime.js | live stats grid, GPX/CSV export, past-trip history with delete/export, achievement badge tray, lifetime "you vs. history" odometer + climb-o-meter |
+| Plates | plates.js, bingo.js | games hub — license plate spotting game (grid of 50 states with Wikipedia plate photos, greyed until tapped seen; US map choropleth view) plus highway bingo (5x5 tap-to-mark card of road-trip sights, free center, line-detection toasts); all state persists in localStorage, independent of any trip |
 
 Fun/flavor additions layered onto existing milestones (milestones.js): distance/altitude/speed
 records get a real-world comparison ("farther than a marathon", "as high as the Burj Khalifa",
-"faster than a cheetah's top sprint"), state crossings get a one-line trivia fact, and hitting
-exactly 88 mph fires a Back to the Future easter egg.
+"faster than a cheetah's top sprint"), state crossings get a one-line trivia fact, integer
+parallel crossings announce same-latitude world cities, and hitting exactly 88 mph fires a
+Back to the Future easter egg. sun.js also flags supermoons/micromoons and full-moon-rise-at-
+sunset spectacles using SunCalc's moon distance.
 
 ## External data (all free, keyless, CORS-open)
 

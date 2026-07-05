@@ -74,6 +74,7 @@
       <div id="sunPos"></div>
       <div id="terminatorInfo" class="fun-fact"></div>
       <div id="moonInfo"></div>
+      <div id="moonSpecial" class="fun-fact"></div>
     </div>
     <div id="issCard" class="panel">
       <div id="issInfo">🛰️ locating ISS…</div>
@@ -92,6 +93,8 @@
     </div>
     <h2>Achievements</h2>
     <div id="badgeTray" class="badge-tray"></div>
+    <h2>Lifetime</h2>
+    <div id="lifetimeStats" class="panel"><div class="muted">no trips yet</div></div>
     <h2>Past trips</h2>
     <div id="tripHistory"><div class="muted">no saved trips</div></div>
   </section>
@@ -103,12 +106,20 @@
       <div class="plate-view-toggle">
         <button id="plateViewGrid" class="chip chip-on">grid</button>
         <button id="plateViewMap" class="chip">map</button>
+        <button id="plateViewBingo" class="chip">bingo</button>
       </div>
     </div>
-    <div class="plate-progress"><div id="plateProgressFill"></div></div>
+    <div id="plateProgress" class="plate-progress"><div id="plateProgressFill"></div></div>
     <div id="plateGrid" class="plate-grid"></div>
     <div id="plateMapWrap" class="hidden">
       <div id="plateMapSvg" class="plate-map"></div>
+    </div>
+    <div id="bingoWrap" class="hidden">
+      <div id="bingoCard" class="bingo-card"></div>
+      <div class="bingo-actions">
+        <span id="bingoStatus" class="muted"></span>
+        <button id="bingoNew" class="chip">new card</button>
+      </div>
     </div>
   </section>
 
