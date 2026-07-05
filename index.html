@@ -96,6 +96,21 @@
     <div id="tripHistory"><div class="muted">no saved trips</div></div>
   </section>
 
+  <!-- ── Plates ────────────────────────────────────────── -->
+  <section id="screen-plates" class="screen">
+    <div class="plate-toolbar">
+      <span id="plateCount" class="plate-count">0 / 50</span>
+      <div class="plate-view-toggle">
+        <button id="plateViewGrid" class="chip chip-on">grid</button>
+        <button id="plateViewMap" class="chip">map</button>
+      </div>
+    </div>
+    <div id="plateGrid" class="plate-grid"></div>
+    <div id="plateMapWrap" class="hidden">
+      <div id="plateMapSvg" class="plate-map"></div>
+    </div>
+  </section>
+
 </main>
 
 <nav id="tabbar">
@@ -104,6 +119,7 @@
   <button data-screen="map"><span class="tab-icon">&#128506;</span>Map</button>
   <button data-screen="sky"><span class="tab-icon">&#9992;</span>Sky</button>
   <button data-screen="trips"><span class="tab-icon">&#128203;</span>Trips</button>
+  <button data-screen="plates"><span class="tab-icon">&#129706;</span>Plates</button>
 </nav>
 
 <div id="toasts"></div>

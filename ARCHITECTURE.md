@@ -36,6 +36,7 @@ fullscreen like an app.
 | Map | map.js | Leaflet + OSM tiles, trip track polyline, follow toggle, RainViewer radar overlay, weather panel |
 | Sky | planes.js, sun.js, iss.js | nearby aircraft (callsign, type, alt, distance, "10 o'clock · left window · 25° up", Wikipedia photo of the aircraft model), sunrise/sunset/golden hour, glare warning, moon phase + rise/set, terminator-chasing fun line, ISS position + "look up" spotting callout |
 | Trips | app.js, store.js, achievements.js | live stats grid, GPX/CSV export, past-trip history with delete/export, achievement badge tray |
+| Plates | plates.js | license plate spotting game — grid of 50 states (greyed out until tapped seen, Wikipedia plate photo per state) and a US map view (vendored SVG, continental + AK/HI insets) that colors in seen states; seen-count and per-state state persist in localStorage, independent of any trip |
 
 Fun/flavor additions layered onto existing milestones (milestones.js): distance/altitude/speed
 records get a real-world comparison ("farther than a marathon", "as high as the Burj Khalifa",
@@ -48,6 +49,7 @@ exactly 88 mph fires a Back to the Future easter egg.
 |---|---|---|---|
 | airplanes.live `/v2/point/{lat}/{lon}/{nm}` | planes.js | nearby aircraft (incl. operator + type description) | 10 s, only while Sky tab open |
 | Wikipedia `action=query&generator=search` (`origin=*`) | planes.js | representative photo of each aircraft's type, cached per type string | on first sighting of a type |
+| Wikipedia `action=query&generator=search` (`origin=*`) | plates.js | each state's standard-issue plate photo (`Vehicle registration plates of X`), cached to localStorage | once per state, ever (state list is static) |
 | wheretheiss.at `/v1/satellites/25544` | iss.js | ISS position for distance/bearing/elevation + spotting callout | 20 s, only while Sky tab open |
 | Open-Meteo | weather.js | current conditions + precip outlook | 10 min or 15 km |
 | RainViewer | map.js | radar tile overlay | 5 min while radar on |
@@ -96,4 +98,5 @@ tail, which is good enough and costs nothing extra since it's cached per type.
 
 ## Vendored libraries (`vendor/`, committed)
 
-uPlot 1.6.32 · Leaflet 1.9.4 · SunCalc 1.9.0 (all fetched via npm)
+uPlot 1.6.32 · Leaflet 1.9.4 · SunCalc 1.9.0 (all fetched via npm) · us-states.svg
+(MIT, choropleth base for the Plates map — see vendor/us-map/us-states.svg header)

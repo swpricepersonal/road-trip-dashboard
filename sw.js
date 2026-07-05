@@ -1,7 +1,7 @@
 /* Service worker: cache the app shell so the dashboard opens instantly
    (and works with no signal) — live API calls always go to the network. */
 
-const CACHE = 'rtd-v4';
+const CACHE = 'rtd-v5';
 
 const SHELL = [
   './',
@@ -22,11 +22,15 @@ const SHELL = [
   './js/planes.js',
   './js/sun.js',
   './js/milestones.js',
+  './js/achievements.js',
+  './js/iss.js',
+  './js/plates.js',
   './vendor/uplot/uPlot.iife.min.js',
   './vendor/uplot/uPlot.min.css',
   './vendor/leaflet/leaflet.js',
   './vendor/leaflet/leaflet.css',
   './vendor/suncalc/suncalc.js',
+  './vendor/us-map/us-states.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',

@@ -19,8 +19,9 @@ import './sun.js';
 import './milestones.js';
 import './achievements.js';
 import './iss.js';
+import './plates.js';
 
-export const APP_VERSION = '0.1.3';
+export const APP_VERSION = '0.1.4';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
