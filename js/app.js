@@ -17,8 +17,10 @@ import './weather.js';
 import './planes.js';
 import './sun.js';
 import './milestones.js';
+import './achievements.js';
+import './iss.js';
 
-export const APP_VERSION = '0.1.2';
+export const APP_VERSION = '0.1.3';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);

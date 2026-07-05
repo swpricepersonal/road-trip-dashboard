@@ -8,6 +8,12 @@ import { compass, fmtClock } from './util.js';
 const REFRESH_MS = 30000;
 let lastRender = 0;
 
+// Earth's rotational surface speed at the equator (m/s) — the terminator
+// line sweeps west across the ground at this speed times cos(latitude).
+// Driving west subtracts from that closing speed, delaying your local
+// sunset/sunrise — the same trick Concorde used to "outrun" sunsets.
+const EARTH_ROT_MPS = 465.1;
+
 const MOON_NAMES = [
   'New moon', 'Waxing crescent', 'First quarter', 'Waxing gibbous',
   'Full moon', 'Waning gibbous', 'Last quarter', 'Waning crescent',
@@ -59,9 +65,30 @@ function render(fix) {
   posEl.textContent = posText;
   posEl.classList.toggle('glare', glare);
 
+  const termEl = document.getElementById('terminatorInfo');
+  if (termEl) termEl.textContent = terminatorRace(fix, sunAzDeg, up);
+
   const illum = SunCalc.getMoonIllumination(now);
   const name = MOON_NAMES[Math.round(illum.phase * 8) % 8];
   moonEl.textContent = `${name} · ${Math.round(illum.fraction * 100)}% lit · ${moonTimesText(now, fix.lat, fix.lon)}`;
+}
+
+// How much of the terminator's westward sweep your driving is matching.
+// Only worth mentioning above a highway-speed westward component.
+function terminatorRace(fix, sunAzDeg, up) {
+  if (fix.speedMps == null || fix.heading == null || fix.speedMps < 4.5) return '';
+  const terminatorMps = EARTH_ROT_MPS * Math.cos((fix.lat * Math.PI) / 180);
+  if (terminatorMps <= 0) return '';
+  const headingRad = (fix.heading * Math.PI) / 180;
+  const westMps = -(fix.speedMps * Math.sin(headingRad)); // positive = driving west
+  if (westMps <= 0) return '';
+
+  const pct = Math.round((westMps / terminatorMps) * 100);
+  if (pct < 2) return '';
+  const label = up ? 'sunset' : 'sunrise';
+  return pct >= 100
+    ? `🌅 you're driving west faster than the terminator line — outrunning ${label} itself!`
+    : `chasing the ${label}: driving west fast enough to match ${pct}% of the terminator's sweep`;
 }
 
 // SunCalc.getMoonTimes only covers the given calendar day (local time) and

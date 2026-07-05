@@ -8,6 +8,7 @@
      'weather'    {now, next}
      'screen'     {name}                                        active tab changed
      'settings'   {}                                            settings saved
+     'region-change' {state}                                    new state entered (milestones.js)
 */
 
 const bus = new EventTarget();

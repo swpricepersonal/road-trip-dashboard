@@ -132,6 +132,10 @@ main {
 #sunTimes { font-size: 15px; }
 #sunPos, #moonInfo { color: var(--muted); font-size: 13px; }
 #sunPos.glare { color: var(--warn); font-weight: 600; }
+.fun-fact { color: var(--accent2); font-size: 13px; font-style: italic; }
+.fun-fact:empty { display: none; }
+#issCard { margin-top: 10px; }
+#issInfo { color: var(--muted); font-size: 13px; }
 #planeList { display: flex; flex-direction: column; gap: 8px; }
 .plane-card { display: flex; gap: 10px; align-items: flex-start; background: var(--card); border-radius: 12px; padding: 10px 12px; }
 .plane-img { width: 56px; height: 56px; flex: 0 0 auto; object-fit: cover; border-radius: 8px; background: var(--bg2); }
@@ -154,6 +158,16 @@ main {
 .trip-item-actions { display: flex; gap: 6px; margin-top: 8px; }
 .trip-item-actions .chip { padding: 5px 12px; font-size: 12px; }
 .chip.danger { color: var(--danger); border-color: var(--danger); }
+
+.badge-tray { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; }
+.badge {
+  flex: 1 1 72px; max-width: 92px; text-align: center; padding: 10px 4px;
+  border-radius: 10px; background: var(--card); opacity: 0.35; filter: grayscale(1);
+}
+.badge.unlocked { opacity: 1; filter: none; box-shadow: 0 0 0 1px var(--accent) inset; }
+.badge-icon { font-size: 24px; }
+.badge-name { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.badge.unlocked .badge-name { color: var(--fg); font-weight: 600; }
 
 /* ── tab bar ─────────────────────────────────────────── */
 #tabbar {

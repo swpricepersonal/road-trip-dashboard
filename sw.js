@@ -1,7 +1,7 @@
 /* Service worker: cache the app shell so the dashboard opens instantly
    (and works with no signal) — live API calls always go to the network. */
 
-const CACHE = 'rtd-v3';
+const CACHE = 'rtd-v4';
 
 const SHELL = [
   './',

@@ -34,14 +34,21 @@ fullscreen like an app.
 | Drive | app.js | big speed numeral, distance/elevation/heading cards, trip time, weather glance, event feed, start/end trip |
 | Charts | charts.js | uPlot speed-vs-time + elevation-vs-time of active trip |
 | Map | map.js | Leaflet + OSM tiles, trip track polyline, follow toggle, RainViewer radar overlay, weather panel |
-| Sky | planes.js, sun.js | nearby aircraft (callsign, type, alt, distance, "10 o'clock · left window · 25° up"), sunrise/sunset/golden hour, glare warning, moon phase |
-| Trips | app.js, store.js | live stats grid, GPX/CSV export, past-trip history with delete/export |
+| Sky | planes.js, sun.js, iss.js | nearby aircraft (callsign, type, alt, distance, "10 o'clock · left window · 25° up", Wikipedia photo of the aircraft model), sunrise/sunset/golden hour, glare warning, moon phase + rise/set, terminator-chasing fun line, ISS position + "look up" spotting callout |
+| Trips | app.js, store.js, achievements.js | live stats grid, GPX/CSV export, past-trip history with delete/export, achievement badge tray |
+
+Fun/flavor additions layered onto existing milestones (milestones.js): distance/altitude/speed
+records get a real-world comparison ("farther than a marathon", "as high as the Burj Khalifa",
+"faster than a cheetah's top sprint"), state crossings get a one-line trivia fact, and hitting
+exactly 88 mph fires a Back to the Future easter egg.
 
 ## External data (all free, keyless, CORS-open)
 
 | Source | Module | Use | Cadence |
 |---|---|---|---|
 | airplanes.live `/v2/point/{lat}/{lon}/{nm}` | planes.js | nearby aircraft (incl. operator + type description) | 10 s, only while Sky tab open |
+| Wikipedia `action=query&generator=search` (`origin=*`) | planes.js | representative photo of each aircraft's type, cached per type string | on first sighting of a type |
+| wheretheiss.at `/v1/satellites/25544` | iss.js | ISS position for distance/bearing/elevation + spotting callout | 20 s, only while Sky tab open |
 | Open-Meteo | weather.js | current conditions + precip outlook | 10 min or 15 km |
 | RainViewer | map.js | radar tile overlay | 5 min while radar on |
 
@@ -65,10 +72,21 @@ ADS-B source history (2026-07): OpenSky (user has an API key, see
 out to send no CORS headers either. airplanes.live allows `*` and returns the
 richest data (operator, aircraft description), so it's the source.
 
+Aircraft photo source (2026-07): planespotters.net's per-tail photo API was
+the obvious pick but rejects any real browser User-Agent (requires a contact
+URL in the UA string, which JS can't override) — no static-site workaround.
+Wikipedia's search API (`origin=*`, CORS-open) keyed on the aircraft type
+description gives a representative photo of the *model* instead of the exact
+tail, which is good enough and costs nothing extra since it's cached per type.
+
 ## Dev / test
 
-- Local: any static server, e.g. `python -m http.server 8123`, or the
-  configured `.claude/launch.json`.
+- Local: `.claude/launch.json` runs `scripts/devserver.py` (not plain
+  `python -m http.server`) — the plain server sends no `Cache-Control`
+  header, so a browser tab can keep serving stale cached JS modules across
+  reloads indefinitely even after files change on disk (cost real debugging
+  time once — see the deploy caching gotcha above, same class of bug but for
+  local testing). devserver.py just adds `Cache-Control: no-store`.
 - **Simulation mode:** `index.html?sim=1` replays a synthetic drive starting
   south of Huntsville, AL heading north across the Tennessee line — real
   coordinates so weather/planes/geocoding return live data. `&fast=1` = 10×.
